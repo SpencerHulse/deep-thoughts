@@ -30,6 +30,19 @@ const resolvers = {
         .populate("friends")
         .populate("thoughts");
     },
+    // Me for the JWT
+    me: async (parent, args, context) => {
+      // Check for context.user (JWT)
+      if (context.user) {
+        const userData = await User.findOne({})
+          .select("-__v -password")
+          .populate("thoughts")
+          .populate("friends");
+
+        return userData;
+      }
+      throw new AuthenticationError("Not logged in");
+    },
   },
   Mutation: {
     addUser: async (parent, args) => {

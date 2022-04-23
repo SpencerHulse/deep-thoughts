@@ -8,13 +8,14 @@ const db = require("./config/connection");
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+const { authMiddleware } = require("./utils/auth");
 const startServer = async () => {
   // Creating a new Apollo server and passing in schema data
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    // Didn't work with the below...
-    // context: authMiddleware
+    // Didn't work with the below... until 21.2.5
+    context: authMiddleware,
   });
 
   // Starting the Apollo server
