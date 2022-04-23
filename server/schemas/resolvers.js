@@ -1,4 +1,6 @@
+const { AuthenticationError } = require("apollo-server-express");
 const { User, Thought } = require("../models");
+const { signToken } = require("../utils/auth");
 
 // Resolvers serve the response for typeDefs (Queries/Mutations)
 const resolvers = {
@@ -27,6 +29,31 @@ const resolvers = {
         .select("-__v -password")
         .populate("friends")
         .populate("thoughts");
+    },
+  },
+  Mutation: {
+    addUser: async (parent, args) => {
+      const user = await User.create(args);
+      const token = signToken(user);
+
+      return { token, user };
+    },
+
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+
+      const correctPw = await user.isCorrectPassword(password);
+
+      if (!correctPw) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+      // Sign token using the user data and return both
+      const token = signToken(user);
+      return { token, user };
     },
   },
 };

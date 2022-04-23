@@ -30,11 +30,21 @@ const typeDefs = gql`
     username: String
   }
 
+  type Auth {
+    token: ID!
+    user: User
+  }
+
   type Query {
     users: [User]
     user(username: String!): User
     thoughts(username: String): [Thought]
     thought(_id: ID!): Thought
+  }
+
+  type Mutation {
+    login(email: String!, password: String!): Auth
+    addUser(username: String!, email: String!, password: String!): Auth
   }
 `;
 
@@ -47,3 +57,5 @@ but it is not required */
 // The ! after a query parameter means it must exist for the query to be carried out
 // Didn't do it for all thoughts or users because we simply return all of them
 // For a single thought or user, we must know which we are looking for, so it must exist
+
+// Example - login mutation required email/password and returns a User object
