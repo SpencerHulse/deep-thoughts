@@ -8,7 +8,6 @@ const Home = () => {
   const { loading, data } = useQuery(QUERY_THOUGHTS);
   // Optional chaining negates the need to check if an object exists before accessing its properties
   const thoughts = data?.thoughts || [];
-  console.log(thoughts);
 
   return (
     <main>
