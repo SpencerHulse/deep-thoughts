@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 // Importing ApolloServer
 const { ApolloServer } = require("apollo-server-express");
 // Importing typeDefs and Resolvers
@@ -33,6 +34,15 @@ startServer();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// Serve up static assets
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/build")));
+}
+// This and the above are for production only - Not development
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
 
 // Forming a connection to the DB, then starting the server
 db.once("open", () => {
