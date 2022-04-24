@@ -5,6 +5,8 @@ import {
   InMemoryCache,
   createHttpLink,
 } from "@apollo/client";
+// Used to retrieve the JWT every time a GraphQL request is made
+import { setContext } from "@apollo/client/link/context";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -20,9 +22,22 @@ import Signup from "./pages/Signup";
 const httpLink = createHttpLink({
   uri: "/graphql",
 });
+// "Middleware" function to retrieve token and combine it with the existing httpLink
+// We do not need the first parameter offered by setContext. Because of that, "_" is used as a placeholder to get to the second.
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("id_token");
+  return {
+    /* ensures the return headers of every request includes the token */
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
 // Instantiate the Apollo Client instance to connect to the API endpoint
 const client = new ApolloClient({
-  link: httpLink,
+  // Combining authLink with httpLink
+  link: authLink.concat(httpLink),
   // Instantiate a new cache object
   cache: new InMemoryCache(),
 });

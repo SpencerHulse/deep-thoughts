@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { ADD_USER } from "../utils/mutations";
+import Auth from "../utils/auth";
 
 const Signup = () => {
   /* Initial state is blank, and it can also be updated upon submission
@@ -35,7 +36,7 @@ const Signup = () => {
         // ... allows for any number of variables to be passed in and destructured
         variables: { ...formState },
       });
-      console.log(data);
+      Auth.login(data.addUser.token);
     } catch (err) {
       console.error(err);
     }
